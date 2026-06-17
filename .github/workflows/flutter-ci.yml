@@ -1,0 +1,46 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'mobile-app/**'
+      - '.github/workflows/flutter-ci.yml'
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'mobile-app/**'
+      - '.github/workflows/flutter-ci.yml'
+
+defaults:
+  run:
+    working-directory: mobile-app
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Prepare environment file
+        run: cp .env.example .env
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Flutter analyze
+        # Fail on warnings/errors; ~100 legacy info-level style hints are non-blocking.
+        run: flutter analyze --no-pub --no-fatal-infos
+
+      - name: Flutter test
+        run: |
+          flutter test \
+            --dart-define=AKUKO_API_BASE_URL=https://books.ikikearts.com/wp-json/akuko/v1/

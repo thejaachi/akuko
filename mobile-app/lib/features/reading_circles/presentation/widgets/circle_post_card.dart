@@ -76,24 +76,6 @@ class _CirclePostCardState extends ConsumerState<CirclePostCard> {
     }
   }
 
-  Future<void> _onAvatarTap() async {
-    final followAsync = ref.read(followUserProvider(widget.post.userId));
-    final following = followAsync.valueOrNull ?? false;
-
-    try {
-      await toggleFollowUser(
-        ref,
-        targetUserId: widget.post.userId,
-        currentlyFollowing: following,
-      );
-      if (mounted) {
-        context.showSnack(following ? 'Unfollowed' : 'Following');
-      }
-    } catch (e) {
-      if (mounted) context.showSnack('Could not update follow');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final post = widget.post;

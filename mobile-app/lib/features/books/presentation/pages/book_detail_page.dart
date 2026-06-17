@@ -18,7 +18,6 @@ import 'package:akuko/features/gifting/presentation/widgets/gift_sheet.dart';
 import 'package:akuko/features/profile/presentation/controllers/profile_providers.dart';
 import 'package:akuko/features/wallet/presentation/controllers/wallet_providers.dart';
 import 'package:akuko/shared/domain/entities/book.dart';
-import 'package:akuko/shared/domain/entities/book_delivery_format.dart';
 
 class BookDetailPage extends ConsumerWidget {
   const BookDetailPage({required this.bookId, super.key});

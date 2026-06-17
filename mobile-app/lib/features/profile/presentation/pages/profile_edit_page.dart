@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:akuko/core/theme/app_colors.dart';
 import 'package:akuko/core/utils/extensions.dart';
-import 'package:akuko/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:akuko/features/profile/presentation/controllers/profile_providers.dart';
 import 'package:akuko/shared/domain/entities/profile.dart';
 

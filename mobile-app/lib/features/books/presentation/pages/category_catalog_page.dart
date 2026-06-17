@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:akuko/core/error/failures.dart' show describeError;
 import 'package:akuko/core/utils/result.dart';
-import 'package:akuko/core/utils/extensions.dart';
 import 'package:akuko/core/utils/responsive.dart';
 import 'package:akuko/core/widgets/empty_view.dart';
 import 'package:akuko/core/widgets/error_view.dart';

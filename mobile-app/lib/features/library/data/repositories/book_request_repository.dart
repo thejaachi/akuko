@@ -1,6 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:akuko/core/error/failures.dart';
 import 'package:akuko/core/utils/result.dart';
 import 'package:akuko/features/library/domain/entities/book_request.dart';
 
