@@ -1,0 +1,20 @@
+# Composer production dependencies (install via CI, server script, or release zip)
+/vendor/
+
+# Local Composer phar (downloaded by bin/install-dependencies.php)
+/composer.phar
+
+# Build output
+/dist/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# PHPUnit cache
+.phpunit.result.cache
+
+# Node (if added later)
+node_modules/

@@ -1,0 +1,70 @@
+name: Build plugin release
+
+on:
+  push:
+    tags:
+      - 'plugin-v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: none
+
+      - name: Install production dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: Verify vendor autoload
+        run: test -f vendor/autoload.php
+
+      - name: Resolve version
+        id: version
+        run: |
+          VERSION=$(grep "define( 'AKUKO_MOBILE_API_VERSION'" akuko-mobile-api.php | sed -E "s/.*define\(\s*'AKUKO_MOBILE_API_VERSION',\s*'([^']+)'.*/\1/" | head -n1)
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Build release zip
+        run: |
+          PLUGIN_SLUG=akuko-mobile-api
+          VERSION="${{ steps.version.outputs.version }}"
+          STAGING="/tmp/${PLUGIN_SLUG}-release/${PLUGIN_SLUG}"
+          mkdir -p "$(dirname "$STAGING")"
+          rsync -a \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='tests/' \
+            --exclude='scripts/' \
+            --exclude='dist/' \
+            --exclude='node_modules/' \
+            --exclude='phpunit.xml.dist' \
+            --exclude='.gitignore' \
+            --exclude='composer.phar' \
+            ./ "$STAGING/"
+          cd /tmp/${PLUGIN_SLUG}-release
+          zip -r "akuko-mobile-api-release.zip" "$PLUGIN_SLUG"
+          test -f "$STAGING/vendor/autoload.php"
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: akuko-mobile-api-release
+          path: /tmp/akuko-mobile-api-release/akuko-mobile-api-release.zip
+          retention-days: 90
+
+      - name: Summary
+        run: |
+          ls -lh /tmp/akuko-mobile-api-release/akuko-mobile-api-release.zip
+          unzip -l /tmp/akuko-mobile-api-release/akuko-mobile-api-release.zip | head -20

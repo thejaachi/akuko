@@ -1,0 +1,74 @@
+# Akuko — Supabase local/dev configuration.
+# `project_id` is used to namespace local containers; set it to your linked ref
+# context. Replace with `supabase link --project-ref <ref>` for cloud work.
+project_id = "akuko"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[storage]
+enabled = true
+file_size_limit = "500MiB"
+
+[auth]
+enabled = true
+site_url = "io.akuko.app://login-callback/"
+additional_redirect_urls = [
+  "io.akuko.app://login-callback/",
+  "http://localhost:3000",
+]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+
+# Google OAuth — fill secrets via env (do NOT commit real values).
+[auth.external.google]
+enabled = true
+client_id = "env(GOOGLE_OAUTH_CLIENT_ID)"
+secret = "env(GOOGLE_OAUTH_SECRET)"
+redirect_uri = "io.akuko.app://login-callback/"
+
+# Edge functions. verify_jwt = true means the platform rejects unauthenticated
+# calls before your code runs. Our functions ALSO validate the user explicitly.
+[functions.signed-url]
+verify_jwt = true
+
+[functions.ai-summary]
+verify_jwt = true
+
+[functions.reading-assistant]
+verify_jwt = true
+
+[functions.tts]
+verify_jwt = true
+
+# Paystack: client-invoked functions require a valid Supabase JWT.
+[functions.paystack-initialize]
+verify_jwt = true
+
+[functions.paystack-verify]
+verify_jwt = true
+
+[functions.paystack-cancel]
+verify_jwt = true
+
+# Paystack webhook is a server-to-server callback (no Supabase JWT). It is
+# secured by HMAC-SHA512 signature verification inside the function instead.
+[functions.paystack-webhook]
+verify_jwt = false

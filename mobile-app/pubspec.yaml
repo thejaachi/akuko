@@ -1,0 +1,86 @@
+name: akuko
+description: "Akuko — a modern ebook reader and bookstore (EPUB & PDF) built with Flutter."
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.5.1
+
+  # Navigation
+  go_router: ^14.2.0
+
+  # Networking / images
+  cached_network_image: ^3.3.1
+
+  # Readers
+  # EPUB rendering. epub_view exposes a chapter/CFI-like position via its
+  # controller that maps to the `reading_progress.location` contract.
+  epub_view: ^3.2.0
+  # PDF rendering (native pdfium-backed, supports network/file/data sources,
+  # page navigation and zoom).
+  pdfx: ^2.6.0
+
+  # Payments (Paystack checkout opens the authorization_url in a WebView;
+  # verification happens server-side via edge function + webhook — never trust
+  # the client for payment status).
+  webview_flutter: ^4.8.0
+  url_launcher: ^6.3.0
+  http: ^1.2.2
+
+  # Local persistence (reader prefs, cached session bits)
+  shared_preferences: ^2.2.3
+
+  # Configuration
+  flutter_dotenv: ^5.1.0
+
+  # Formatting / i18n
+  intl: ^0.19.0
+  share_plus: ^10.0.0
+
+  # Typography
+  google_fonts: ^6.2.1
+
+  # Value equality for domain entities
+  equatable: ^2.0.5
+
+  # AI — contextual dictionary in reader
+  google_generative_ai: ^0.4.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.11.0
+
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#0D1B2A"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - .env
+    - assets/images/
+    - assets/images/covers/sweetness_poems.png
+
+  # Bundled font families referenced by the reader theme. Replace the .ttf
+  # paths with real font files before shipping, or remove the entries to fall
+  # back to google_fonts (which fetches at runtime).
+  # fonts:
+  #   - family: Literata
+  #     fonts:
+  #       - asset: assets/fonts/Literata-Regular.ttf
+  #       - asset: assets/fonts/Literata-Bold.ttf
+  #         weight: 700

@@ -1,0 +1,55 @@
+﻿# Monorepo root ignores
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Secrets / environment
+.env
+.env.local
+.env.*.local
+*.env
+!*.env.example
+**/credentials*
+**/secrets*
+*supabase*key*
+*service_role*
+
+# Flutter (mobile-app)
+mobile-app/.dart_tool/
+mobile-app/.pub/
+mobile-app/.pub-cache/
+mobile-app/build/
+mobile-app/**/build/
+mobile-app/.flutter-plugins
+mobile-app/.flutter-plugins-dependencies
+mobile-app/.packages
+mobile-app/android/.gradle/
+mobile-app/android/app/build/
+mobile-app/ios/Pods/
+mobile-app/ios/.symlinks/
+mobile-app/coverage/
+*.jks
+*.keystore
+
+# PHP plugin
+akuko-mobile-api/vendor/
+akuko-mobile-api/composer.phar
+akuko-mobile-api/dist/
+akuko-mobile-api/.phpunit.result.cache
+akuko-mobile-api/node_modules/
+
+# Archives / local artifacts
+*.zip
+analyze_out.txt
+build_apk_log.txt
+.metadata
+
+# Node (admin dashboards if present)
+**/node_modules/
