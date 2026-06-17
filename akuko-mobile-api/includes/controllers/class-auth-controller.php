@@ -4,6 +4,7 @@ namespace Akuko\MobileApi\Controllers;
 use Akuko\MobileApi\Middleware\Jwt_Auth_Middleware;
 use Akuko\MobileApi\Middleware\Rate_Limit_Middleware;
 use Akuko\MobileApi\Services\Interfaces\AuthenticationService_Interface;
+use Akuko\MobileApi\Validators\Auth_Validator;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -41,9 +42,19 @@ class Auth_Controller extends Base_Controller {
 			return $this->from_wp_error( $check );
 		}
 
+		$email    = sanitize_email( (string) ( $request->get_param( 'email' ) ?? '' ) );
+		$password = $request->get_param( 'password' );
+		$error    = Auth_Validator::login_credentials( array(
+			'email'    => $email,
+			'password' => is_string( $password ) ? $password : '',
+		) );
+		if ( null !== $error ) {
+			return $this->error( $error, 'invalid_data', 400 );
+		}
+
 		$result = $this->auth->login(
-			sanitize_email( $request->get_param( 'email' ) ),
-			$request->get_param( 'password' ),
+			$email,
+			$password,
 			sanitize_text_field( $request->get_param( 'device_id' ) ?? '' ),
 			sanitize_text_field( $request->get_param( 'device_name' ) ?? '' )
 		);
