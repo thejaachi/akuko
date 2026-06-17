@@ -21,4 +21,4 @@ Installation, API reference, and operations:
 - [API.md](mobile-api/API.md)
 - [TROUBLESHOOTING.md](mobile-api/TROUBLESHOOTING.md)
 
-See all files in [mobile-api/](mobile-api/).
+- [docs/API_SMOKE_TEST.md](API_SMOKE_TEST.md) — live API health checks
