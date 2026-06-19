@@ -1,6 +1,7 @@
 <?php
 namespace Akuko\MobileApi\Services;
 
+use Akuko\MobileApi\Helpers\Auth_Config;
 use Akuko\MobileApi\Models\User_Transformer;
 use Akuko\MobileApi\Repositories\Interfaces\User_Repository_Interface;
 use Akuko\MobileApi\Services\Interfaces\AuthenticationService_Interface;
@@ -59,12 +60,12 @@ class AuthenticationService implements AuthenticationService_Interface {
 			return true;
 		}
 
-		$key = get_password_reset_key( $user );
-		if ( is_wp_error( $key ) ) {
-			return $key;
+		$sent = retrieve_password( $user->user_login );
+		if ( is_wp_error( $sent ) ) {
+			return $sent;
 		}
 
-		do_action( 'akuko_mobile_api_password_reset_requested', $user, $key );
+		do_action( 'akuko_mobile_api_password_reset_requested', $user );
 		return true;
 	}
 

@@ -26,4 +26,26 @@ class AuthControllerTest extends TestCase {
 		$this->assertSame( 'invalid_data', $response->data['error']['code'] );
 		$this->assertSame( 'Email and password are required.', $response->data['error']['message'] );
 	}
+
+	public function test_register_with_invalid_email_returns_400(): void {
+		$auth = $this->createMock( AuthenticationService_Interface::class );
+		$auth->expects( $this->never() )->method( 'register' );
+
+		$controller = new Auth_Controller(
+			new Jwt_Auth_Middleware( $auth ),
+			new Rate_Limit_Middleware(),
+			$auth
+		);
+
+		$request = new \WP_REST_Request( array(
+			'email'    => 'not-an-email',
+			'password' => 'TestPass123!',
+		) );
+
+		$response = $controller->register( $request );
+
+		$this->assertSame( 400, $response->status );
+		$this->assertFalse( $response->data['success'] );
+		$this->assertSame( 'invalid_data', $response->data['error']['code'] );
+	}
 }

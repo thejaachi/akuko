@@ -34,6 +34,12 @@ if ( ! function_exists( 'sanitize_text_field' ) ) {
 	}
 }
 
+if ( ! function_exists( 'is_email' ) ) {
+	function is_email( string $email ): bool {
+		return (bool) filter_var( $email, FILTER_VALIDATE_EMAIL );
+	}
+}
+
 if ( ! function_exists( 'get_transient' ) ) {
 	function get_transient( string $key ): mixed {
 		return false;

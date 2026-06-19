@@ -1,6 +1,7 @@
 <?php
 namespace Akuko\MobileApi\Repositories;
 
+use Akuko\MobileApi\Helpers\Auth_Config;
 use Akuko\MobileApi\Repositories\Interfaces\User_Repository_Interface;
 
 defined( 'ABSPATH' ) || exit;
@@ -23,11 +24,23 @@ class User_Repository implements User_Repository_Interface {
 	}
 
 	public function create( array $data ): int|\WP_Error {
+		$suppress_emails = Auth_Config::skip_email_verification();
+
+		if ( $suppress_emails ) {
+			add_filter( 'wp_send_new_user_notification_to_user', '__return_false' );
+			add_filter( 'wp_send_new_user_notification_to_admin', '__return_false' );
+		}
+
 		$user_id = wp_create_user(
 			$data['username'] ?? $data['email'],
 			$data['password'],
 			sanitize_email( $data['email'] )
 		);
+
+		if ( $suppress_emails ) {
+			remove_filter( 'wp_send_new_user_notification_to_user', '__return_false' );
+			remove_filter( 'wp_send_new_user_notification_to_admin', '__return_false' );
+		}
 
 		if ( is_wp_error( $user_id ) ) {
 			return $user_id;

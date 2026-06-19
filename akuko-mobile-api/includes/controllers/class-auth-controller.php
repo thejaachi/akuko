@@ -24,11 +24,31 @@ class Auth_Controller extends Base_Controller {
 			return $this->from_wp_error( $check );
 		}
 
+		$email    = sanitize_email( (string) ( $request->get_param( 'email' ) ?? '' ) );
+		$password = $request->get_param( 'password' );
+		$first    = sanitize_text_field( (string) ( $request->get_param( 'first_name' ) ?? '' ) );
+		$last     = sanitize_text_field( (string) ( $request->get_param( 'last_name' ) ?? '' ) );
+		$name     = sanitize_text_field( (string) ( $request->get_param( 'name' ) ?? '' ) );
+
+		if ( '' === $first && '' !== $name ) {
+			$parts = preg_split( '/\s+/', trim( $name ), 2 );
+			$first = $parts[0] ?? '';
+			$last  = $parts[1] ?? '';
+		}
+
+		$error = Auth_Validator::registration( array(
+			'email'    => $email,
+			'password' => is_string( $password ) ? $password : '',
+		) );
+		if ( null !== $error ) {
+			return $this->error( $error, 'invalid_data', 400 );
+		}
+
 		$result = $this->auth->register( array(
-			'email'       => sanitize_email( $request->get_param( 'email' ) ),
-			'password'    => $request->get_param( 'password' ),
-			'first_name'  => sanitize_text_field( $request->get_param( 'first_name' ) ?? '' ),
-			'last_name'   => sanitize_text_field( $request->get_param( 'last_name' ) ?? '' ),
+			'email'       => $email,
+			'password'    => $password,
+			'first_name'  => $first,
+			'last_name'   => $last,
 			'device_id'   => sanitize_text_field( $request->get_param( 'device_id' ) ?? '' ),
 			'device_name' => sanitize_text_field( $request->get_param( 'device_name' ) ?? '' ),
 		) );

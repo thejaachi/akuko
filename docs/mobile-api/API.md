@@ -10,7 +10,12 @@ All protected endpoints require: `Authorization: Bearer <access_token>`
 
 Register a new user.
 
-**Body:** `email`, `password`, `first_name?`, `last_name?`, `device_id?`, `device_name?`
+**Body:** `email`, `password`, `first_name?`, `last_name?`, `name?`, `device_id?`, `device_name?`
+
+Returns JWT tokens immediately; email confirmation is not required when
+`AKUKO_SKIP_EMAIL_VERIFICATION` is true (default). Set
+`define( 'AKUKO_SKIP_EMAIL_VERIFICATION', false );` in `wp-config.php` to
+enable WordPress new-user notification emails.
 
 ### POST /auth/login
 
