@@ -11,6 +11,8 @@ import 'package:akuko/core/feature_flags/app_features.dart';
 
 import 'package:akuko/core/feature_flags/feature_flag_provider.dart';
 
+import 'package:akuko/core/network/api_client_provider.dart';
+
 import 'package:akuko/core/router/main_shell.dart';
 
 import 'package:akuko/core/router/routes.dart';
@@ -87,11 +89,10 @@ bool _isFlagOn(Ref ref, String key) =>
 final routerProvider = Provider<GoRouter>((ref) {
 
   final authRepo = ref.watch(authRepositoryProvider);
-
-
+  final session = ref.watch(authSessionManagerProvider);
 
   // Re-run redirects when auth or flags change.
-
+  ref.watch(authStateChangesProvider);
   ref.watch(featureFlagSnapshotProvider);
 
   final refresh = ValueNotifier<int>(0);
@@ -154,7 +155,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 
     redirect: (context, state) {
 
-      final loggedIn = authRepo.currentUser != null;
+      final loggedIn =
+          session.currentUser != null || authRepo.currentUser != null;
 
       final loc = state.matchedLocation;
 

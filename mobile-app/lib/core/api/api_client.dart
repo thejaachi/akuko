@@ -135,7 +135,7 @@ class AkukoApiClient {
     }
 
     if (response.statusCode >= 400) {
-      throw ServerException(_errorMessage(response));
+      throw _exceptionForResponse(response);
     }
 
     return _parseBody(response);
@@ -193,16 +193,40 @@ class AkukoApiClient {
   }
 
   String _errorMessage(http.Response response) {
+    final parsed = _parseErrorBody(response.body);
+    return parsed.$1 ?? 'HTTP ${response.statusCode}';
+  }
+
+  (String?, String?) _parseErrorBody(String body) {
     try {
-      final decoded = jsonDecode(response.body);
+      final decoded = jsonDecode(body);
       if (decoded is Map) {
         final err = decoded['error'];
-        if (err is Map && err['message'] is String) {
-          return err['message'] as String;
+        if (err is Map) {
+          final message = err['message'] is String ? err['message'] as String : null;
+          final code = err['code'] is String ? err['code'] as String : null;
+          return (message, code);
         }
       }
     } catch (_) {}
-    return 'HTTP ${response.statusCode}';
+    return (null, null);
+  }
+
+  AppException _exceptionForResponse(http.Response response) {
+    final (message, code) = _parseErrorBody(response.body);
+    final text = message ?? 'HTTP ${response.statusCode}';
+
+    if (response.statusCode == 401 ||
+        code == 'invalid_credentials' ||
+        code == 'invalid_refresh') {
+      return AuthException(text, code);
+    }
+
+    if (response.statusCode == 409 || code == 'email_exists') {
+      return AuthException(text, code);
+    }
+
+    return ServerException(text, code);
   }
 
   Future<bool> _tryRefresh() async {

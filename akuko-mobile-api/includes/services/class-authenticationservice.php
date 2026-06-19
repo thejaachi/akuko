@@ -37,8 +37,12 @@ class AuthenticationService implements AuthenticationService_Interface {
 	}
 
 	public function login( string $email, string $password, ?string $device_id, ?string $device_name ): array|\WP_Error {
-		$user = wp_authenticate( $email, $password );
-		if ( is_wp_error( $user ) ) {
+		$user = $this->user_repository->find_by_email( $email );
+		if ( ! $user ) {
+			return new \WP_Error( 'invalid_credentials', __( 'Invalid email or password.', 'akuko-mobile-api' ), array( 'status' => 401 ) );
+		}
+
+		if ( ! wp_check_password( $password, $user->user_pass, $user->ID ) ) {
 			return new \WP_Error( 'invalid_credentials', __( 'Invalid email or password.', 'akuko-mobile-api' ), array( 'status' => 401 ) );
 		}
 
