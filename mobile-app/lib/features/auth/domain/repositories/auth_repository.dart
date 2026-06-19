@@ -22,7 +22,7 @@ abstract interface class AuthRepository {
   });
 
   /// Launches the Google OAuth flow (native on mobile, redirect on web).
-  Future<Result<void>> signInWithGoogle();
+  Future<Result<AuthUser>> signInWithGoogle();
 
   /// Sends a password-reset email.
   Future<Result<void>> sendPasswordReset(String email);

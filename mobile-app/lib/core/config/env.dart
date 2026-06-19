@@ -41,4 +41,9 @@ class Env {
   static String get geminiApiKey => _read('GEMINI_API_KEY');
 
   static bool get isGeminiConfigured => geminiApiKey.isNotEmpty;
+
+  /// Web OAuth client ID — required on Android for Google ID tokens.
+  static String get googleWebClientId => _read('GOOGLE_WEB_CLIENT_ID');
+
+  static bool get isGoogleSignInConfigured => googleWebClientId.isNotEmpty;
 }

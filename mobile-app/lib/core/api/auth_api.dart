@@ -83,6 +83,24 @@ class AuthApi {
     return {};
   }
 
+  Future<Map<String, dynamic>> signInWithGoogle({
+    required String idToken,
+    String? deviceId,
+    String? deviceName,
+  }) async {
+    final data = await _client.post(
+      'auth/google',
+      body: {
+        'id_token': idToken,
+        if (deviceId != null) 'device_id': deviceId,
+        if (deviceName != null) 'device_name': deviceName,
+      },
+    ) as Map<String, dynamic>;
+
+    await _persistTokens(data);
+    return data;
+  }
+
   Future<void> _persistTokens(Map<String, dynamic> data) async {
     final access = data['access_token'] as String?;
     final refresh = data['refresh_token'] as String?;

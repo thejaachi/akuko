@@ -19,6 +19,7 @@ dependencies:
 
   # Networking / images
   cached_network_image: ^3.3.1
+  google_sign_in: ^6.2.1
 
   # Readers
   # EPUB rendering. epub_view exposes a chapter/CFI-like position via its

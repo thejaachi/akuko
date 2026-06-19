@@ -1,6 +1,8 @@
 import 'package:akuko/core/api/auth_api.dart';
 import 'package:akuko/core/auth/auth_session_manager.dart';
+import 'package:akuko/core/config/env.dart';
 import 'package:akuko/core/error/exceptions.dart' as app;
+import 'package:google_sign_in/google_sign_in.dart';
 
 /// WordPress Akuko Mobile API auth datasource.
 class AuthRemoteDataSource {
@@ -42,11 +44,38 @@ class AuthRemoteDataSource {
     }
   }
 
-  /// TODO(auth): Wire WordPress OAuth when backend endpoint is available.
-  Future<void> signInWithGoogle() async {
-    throw const app.AuthException(
-      'Google sign-in is not yet available. Use email and password.',
-    );
+  Future<Map<String, dynamic>> signInWithGoogle() async {
+    if (!Env.isGoogleSignInConfigured) {
+      throw const app.AuthException(
+        'Google sign-in is not configured. Set GOOGLE_WEB_CLIENT_ID.',
+      );
+    }
+
+    try {
+      final googleSignIn = GoogleSignIn(
+        scopes: const ['email', 'profile'],
+        serverClientId: Env.googleWebClientId,
+      );
+
+      final account = await googleSignIn.signIn();
+      if (account == null) {
+        throw const app.AuthException('Google sign-in was cancelled.');
+      }
+
+      final auth = await account.authentication;
+      final idToken = auth.idToken;
+      if (idToken == null || idToken.isEmpty) {
+        throw const app.AuthException(
+          'Google sign-in failed: no ID token. Check OAuth client setup.',
+        );
+      }
+
+      return await _authApi.signInWithGoogle(idToken: idToken);
+    } on app.AppException {
+      rethrow;
+    } catch (e) {
+      throw app.ServerException('Google sign-in failed', e);
+    }
   }
 
   Future<void> sendPasswordReset(String email) async {

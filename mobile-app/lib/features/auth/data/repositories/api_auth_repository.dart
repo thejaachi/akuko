@@ -76,9 +76,17 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<Result<void>> signInWithGoogle() {
-    return guardAsync<void>(
-      _remote.signInWithGoogle,
+  Future<Result<AuthUser>> signInWithGoogle() {
+    return guardAsync<AuthUser>(
+      () async {
+        final data = await _remote.signInWithGoogle();
+        _remote.notifyLogin(data);
+        final userJson = data['user'] as Map<String, dynamic>?;
+        if (userJson == null) {
+          throw const app.AuthException('Google sign-in failed');
+        }
+        return _mapUser(userJson);
+      },
       onError: (e, _) => _mapError(e),
     );
   }
