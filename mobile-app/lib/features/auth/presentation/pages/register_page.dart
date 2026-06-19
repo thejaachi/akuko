@@ -43,7 +43,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     if (!mounted) return;
     if (ok) {
       context
-        ..showSnack('Account created. Check your email to confirm.')
+        ..showSnack('Account created. You are signed in.')
         ..go(AppRoutes.home);
     } else {
       final failure = ref.read(authControllerProvider).asError?.error;

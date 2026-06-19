@@ -39,10 +39,13 @@ Future<void> main() async {
 }
 
 Future<void> _loadDotEnv() async {
-  try {
-    await dotenv.load(fileName: '.env');
-  } catch (_) {
-    // No .env bundled — rely on --dart-define.
+  for (final fileName in ['.env', '.env.example']) {
+    try {
+      await dotenv.load(fileName: fileName);
+      return;
+    } catch (_) {
+      // Try the next bundled env file, then fall back to --dart-define.
+    }
   }
 }
 
