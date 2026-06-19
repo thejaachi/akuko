@@ -48,4 +48,21 @@ class AuthControllerTest extends TestCase {
 		$this->assertFalse( $response->data['success'] );
 		$this->assertSame( 'invalid_data', $response->data['error']['code'] );
 	}
+
+	public function test_google_with_missing_token_returns_400(): void {
+		$auth = $this->createMock( AuthenticationService_Interface::class );
+		$auth->expects( $this->never() )->method( 'oauth_google' );
+
+		$controller = new Auth_Controller(
+			new Jwt_Auth_Middleware( $auth ),
+			new Rate_Limit_Middleware(),
+			$auth
+		);
+
+		$response = $controller->google( new \WP_REST_Request( array() ) );
+
+		$this->assertSame( 400, $response->status );
+		$this->assertFalse( $response->data['success'] );
+		$this->assertSame( 'invalid_data', $response->data['error']['code'] );
+	}
 }

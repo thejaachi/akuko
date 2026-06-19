@@ -12,7 +12,7 @@ interface AuthenticationService_Interface {
     public function refresh(string $refresh_token): array|\WP_Error;
     public function me(int $user_id): array;
     public function validate_access_token(string $token): object;
-    public function oauth_google(string $token): array|\WP_Error;
+    public function oauth_google(string $token, ?string $device_id = null, ?string $device_name = null): array|\WP_Error;
     public function oauth_apple(string $token): array|\WP_Error;
     public function oauth_facebook(string $token): array|\WP_Error;
 }

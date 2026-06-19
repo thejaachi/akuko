@@ -2,6 +2,8 @@
 namespace Akuko\MobileApi\Services;
 
 use Akuko\MobileApi\Helpers\Auth_Config;
+use Akuko\MobileApi\Helpers\Google_Token_Verifier;
+use Akuko\MobileApi\Helpers\Interfaces\Google_Token_Verifier_Interface;
 use Akuko\MobileApi\Models\User_Transformer;
 use Akuko\MobileApi\Repositories\Interfaces\User_Repository_Interface;
 use Akuko\MobileApi\Services\Interfaces\AuthenticationService_Interface;
@@ -16,7 +18,8 @@ class AuthenticationService implements AuthenticationService_Interface {
 	private const REFRESH_TTL = 2592000;
 
 	public function __construct(
-		private User_Repository_Interface $user_repository
+		private User_Repository_Interface $user_repository,
+		private ?Google_Token_Verifier_Interface $google_verifier = null
 	) {}
 
 	public function register( array $data ): array|\WP_Error {
@@ -112,8 +115,47 @@ class AuthenticationService implements AuthenticationService_Interface {
 		return JWT::decode( $token, new Key( $this->get_jwt_secret(), 'HS256' ) );
 	}
 
-	public function oauth_google( string $token ): array|\WP_Error {
-		return new \WP_Error( 'not_implemented', __( 'Google OAuth not yet implemented.', 'akuko-mobile-api' ), array( 'status' => 501 ) );
+	public function oauth_google( string $token, ?string $device_id = null, ?string $device_name = null ): array|\WP_Error {
+		$claims = $this->google_token_verifier()->verify( $token );
+		if ( is_wp_error( $claims ) ) {
+			return $claims;
+		}
+
+		$user = $this->user_repository->find_by_email( $claims['email'] );
+		if ( ! $user ) {
+			$first = $claims['given_name'] ?? '';
+			$last  = $claims['family_name'] ?? '';
+
+			if ( '' === $first && '' !== ( $claims['name'] ?? '' ) ) {
+				$parts = preg_split( '/\s+/', trim( $claims['name'] ), 2 );
+				$first = $parts[0] ?? '';
+				$last  = $parts[1] ?? '';
+			}
+
+			$user_id = $this->user_repository->create(
+				array(
+					'email'      => $claims['email'],
+					'password'   => wp_generate_password( 32, true, true ),
+					'first_name' => $first,
+					'last_name'  => $last,
+				)
+			);
+
+			if ( is_wp_error( $user_id ) ) {
+				return $user_id;
+			}
+
+			update_user_meta( $user_id, 'akuko_google_sub', $claims['sub'] );
+			$user = $this->user_repository->find( $user_id );
+		} elseif ( ! get_user_meta( $user->ID, 'akuko_google_sub', true ) ) {
+			update_user_meta( $user->ID, 'akuko_google_sub', $claims['sub'] );
+		}
+
+		if ( ! $user ) {
+			return new \WP_Error( 'user_not_found', __( 'Unable to sign in with Google.', 'akuko-mobile-api' ), array( 'status' => 500 ) );
+		}
+
+		return $this->issue_tokens( $user->ID, $device_id, $device_name );
 	}
 
 	public function oauth_apple( string $token ): array|\WP_Error {
@@ -154,6 +196,10 @@ class AuthenticationService implements AuthenticationService_Interface {
 			'token_type'    => 'Bearer',
 			'user'          => $user ? User_Transformer::from_wp_user( $user ) : null,
 		);
+	}
+
+	private function google_token_verifier(): Google_Token_Verifier_Interface {
+		return $this->google_verifier ?? new Google_Token_Verifier();
 	}
 
 	private function get_jwt_secret(): string {

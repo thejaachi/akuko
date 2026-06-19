@@ -113,6 +113,7 @@ class Rest_Router {
 		$c = $this->controller( Auth_Controller::class );
 		$this->route( '/auth/register', array( 'methods' => 'POST', 'callback' => array( $c, 'register' ), 'permission_callback' => '__return_true' ) );
 		$this->route( '/auth/login', array( 'methods' => 'POST', 'callback' => array( $c, 'login' ), 'permission_callback' => '__return_true' ) );
+		$this->route( '/auth/google', array( 'methods' => 'POST', 'callback' => array( $c, 'google' ), 'permission_callback' => '__return_true' ) );
 		$this->route( '/auth/logout', array( 'methods' => 'POST', 'callback' => array( $c, 'logout' ), 'permission_callback' => '__return_true' ) );
 		$this->route( '/auth/forgot-password', array( 'methods' => 'POST', 'callback' => array( $c, 'forgot_password' ), 'permission_callback' => '__return_true' ) );
 		$this->route( '/auth/reset-password', array( 'methods' => 'POST', 'callback' => array( $c, 'reset_password' ), 'permission_callback' => '__return_true' ) );

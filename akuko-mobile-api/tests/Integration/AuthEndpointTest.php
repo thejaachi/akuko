@@ -9,6 +9,7 @@ class AuthEndpointTest extends TestCase {
 		$routes = array(
 			'/auth/register',
 			'/auth/login',
+			'/auth/google',
 			'/auth/logout',
 			'/auth/forgot-password',
 			'/auth/reset-password',
@@ -16,7 +17,7 @@ class AuthEndpointTest extends TestCase {
 			'/auth/me',
 		);
 
-		$this->assertCount( 7, $routes );
+		$this->assertCount( 8, $routes );
 		$this->assertStringStartsWith( '/auth/', $routes[0] );
 	}
 }

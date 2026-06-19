@@ -13,6 +13,8 @@ use Akuko\MobileApi\Cache\Cache_Invalidator;
 use Akuko\MobileApi\Database\Migrations\Initial_Schema;
 use Akuko\MobileApi\Events\Event_Dispatcher;
 use Akuko\MobileApi\Events\WooCommerce_Listener;
+use Akuko\MobileApi\Helpers\Google_Token_Verifier;
+use Akuko\MobileApi\Helpers\Interfaces\Google_Token_Verifier_Interface;
 use Akuko\MobileApi\Repositories\Analytics_Repository;
 use Akuko\MobileApi\Repositories\Author_Repository;
 use Akuko\MobileApi\Repositories\Book_Repository;
@@ -145,6 +147,7 @@ final class Plugin {
 		$c->singleton( Analytics_Repository_Interface::class, Analytics_Repository::class );
 
 		$c->singleton( CacheService_Interface::class, CacheService::class );
+		$c->singleton( Google_Token_Verifier_Interface::class, Google_Token_Verifier::class );
 		$c->singleton( AuthenticationService_Interface::class, AuthenticationService::class );
 		$c->singleton( UserService_Interface::class, UserService::class );
 		$c->singleton( BookService_Interface::class, BookService::class );

@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once dirname( __DIR__ ) . '/tests/stubs/wp-error.php';
 require_once dirname( __DIR__ ) . '/tests/stubs/wp-rest.php';
 require_once dirname( __DIR__ ) . '/tests/stubs/wp-user.php';
+require_once dirname( __DIR__ ) . '/tests/stubs/wp-google-auth.php';
 
 if ( ! function_exists( '__' ) ) {
 	function __( string $text, string $domain = 'default' ): string {

@@ -134,4 +134,28 @@ class Auth_Controller extends Base_Controller {
 
 		return $this->success( $this->auth->me( get_current_user_id() ) );
 	}
+
+	public function google( \WP_REST_Request $request ): \WP_REST_Response {
+		$check = $this->rate_limit_check( $request );
+		if ( is_wp_error( $check ) ) {
+			return $this->from_wp_error( $check );
+		}
+
+		$id_token = $request->get_param( 'id_token' );
+		if ( ! is_string( $id_token ) || '' === trim( $id_token ) ) {
+			return $this->error(
+				__( 'Google ID token is required.', 'akuko-mobile-api' ),
+				'invalid_data',
+				400
+			);
+		}
+
+		$result = $this->auth->oauth_google(
+			$id_token,
+			sanitize_text_field( $request->get_param( 'device_id' ) ?? '' ),
+			sanitize_text_field( $request->get_param( 'device_name' ) ?? '' )
+		);
+
+		return is_wp_error( $result ) ? $this->from_wp_error( $result ) : $this->success( $result );
+	}
 }

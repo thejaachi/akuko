@@ -23,6 +23,18 @@ enable WordPress new-user notification emails.
 
 **Response:** `access_token`, `refresh_token`, `expires_in`, `user`
 
+### POST /auth/google
+
+Exchange a Google ID token (from the mobile `google_sign_in` SDK) for Akuko JWTs.
+
+**Body:** `id_token`, `device_id?`, `device_name?`
+
+**Response:** Same shape as `/auth/login`.
+
+Server verifies the token against Google JWKS and checks `aud` against
+`AKUKO_GOOGLE_CLIENT_ID` (comma-separated Android + Web client IDs in
+`wp-config.php`).
+
 ### POST /auth/logout
 
 **Auth required.** Body: `refresh_token?` (omit to revoke all sessions)
